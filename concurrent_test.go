@@ -68,6 +68,7 @@ TestConcurrentGenericReadAndWrite verifies:
  3. The txid should never decrease.
 */
 func TestConcurrentGenericReadAndWrite(t *testing.T) {
+	t.Parallel()
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
@@ -762,6 +763,7 @@ releases free pages, and will not pollute (e.g. prematurely release)
 any pages which are still being used by any read transaction.
 */
 func TestConcurrentRepeatableRead(t *testing.T) {
+	t.Parallel()
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
@@ -798,6 +800,7 @@ func TestConcurrentRepeatableRead(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 
 			t.Log("Preparing db.")
 			var (

@@ -13,6 +13,7 @@ import (
 )
 
 func TestMlock_DbOpen(t *testing.T) {
+	t.Parallel()
 	// 32KB
 	skipOnMemlockLimitBelow(t, 32*1024)
 
@@ -21,6 +22,7 @@ func TestMlock_DbOpen(t *testing.T) {
 
 // Test change between "empty" (16KB) and "non-empty" db
 func TestMlock_DbCanGrow_Small(t *testing.T) {
+	t.Parallel()
 	// 32KB
 	skipOnMemlockLimitBelow(t, 32*1024)
 
@@ -47,6 +49,7 @@ func TestMlock_DbCanGrow_Small(t *testing.T) {
 
 // Test crossing of 16MB (AllocSize) of db size
 func TestMlock_DbCanGrow_Big(t *testing.T) {
+	t.Parallel()
 	if testing.Short() {
 		t.Skip("skipping test in short mode")
 	}

@@ -11,6 +11,7 @@ import (
 )
 
 func TestOpenWithPreLoadFreelist(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		name                    string
 		readonly                bool
@@ -56,6 +57,7 @@ func TestOpenWithPreLoadFreelist(t *testing.T) {
 }
 
 func TestMethodPage(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		name            string
 		readonly        bool
@@ -88,6 +90,7 @@ func TestMethodPage(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			db, err := Open(fileName, 0666, &Options{
 				ReadOnly:        tc.readonly,
 				PreLoadFreelist: tc.preLoadFreePage,

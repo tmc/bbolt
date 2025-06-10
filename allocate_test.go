@@ -8,8 +8,10 @@ import (
 )
 
 func TestTx_allocatePageStats(t *testing.T) {
+	t.Parallel()
 	for n, f := range map[string]freelist.Interface{"hashmap": freelist.NewHashMapFreelist(), "array": freelist.NewArrayFreelist()} {
 		t.Run(n, func(t *testing.T) {
+			t.Parallel()
 			ids := []common.Pgid{2, 3}
 			f.Init(ids)
 

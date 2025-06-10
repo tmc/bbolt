@@ -31,7 +31,6 @@ func createDb(t *testing.T) (*DB, func()) {
 }
 
 func createAndPutKeys(t *testing.T) {
-	t.Parallel()
 
 	db, cleanup := createDb(t)
 	defer cleanup()
@@ -66,8 +65,12 @@ func TestManyDBs(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode")
 	}
+	t.Parallel()
 
 	for i := 0; i < 100; i++ {
-		t.Run(fmt.Sprintf("%d", i), createAndPutKeys)
+		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+			t.Parallel()
+			createAndPutKeys(t)
+		})
 	}
 }

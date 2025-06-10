@@ -20,6 +20,7 @@ import (
 
 // TestTx_Check_ReadOnly tests consistency checking on a ReadOnly database.
 func TestTx_Check_ReadOnly(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.Update(func(tx *bolt.Tx) error {
 		b, err := tx.CreateBucket([]byte("widgets"))
@@ -71,6 +72,7 @@ func TestTx_Check_ReadOnly(t *testing.T) {
 
 // Ensure that committing a closed transaction returns an error.
 func TestTx_Commit_ErrTxClosed(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	tx, err := db.Begin(true)
 	if err != nil {
@@ -92,6 +94,7 @@ func TestTx_Commit_ErrTxClosed(t *testing.T) {
 
 // Ensure that rolling back a closed transaction returns an error.
 func TestTx_Rollback_ErrTxClosed(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	tx, err := db.Begin(true)
@@ -109,6 +112,7 @@ func TestTx_Rollback_ErrTxClosed(t *testing.T) {
 
 // Ensure that committing a read-only transaction returns an error.
 func TestTx_Commit_ErrTxNotWritable(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	tx, err := db.Begin(false)
 	if err != nil {
@@ -126,6 +130,7 @@ func TestTx_Commit_ErrTxNotWritable(t *testing.T) {
 
 // Ensure that a transaction can retrieve a cursor on the root bucket.
 func TestTx_Cursor(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.Update(func(tx *bolt.Tx) error {
 		if _, err := tx.CreateBucket([]byte("widgets")); err != nil {
@@ -163,6 +168,7 @@ func TestTx_Cursor(t *testing.T) {
 
 // Ensure that creating a bucket with a read-only transaction returns an error.
 func TestTx_CreateBucket_ErrTxNotWritable(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.View(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucket([]byte("foo"))
@@ -177,6 +183,7 @@ func TestTx_CreateBucket_ErrTxNotWritable(t *testing.T) {
 
 // Ensure that creating a bucket on a closed transaction returns an error.
 func TestTx_CreateBucket_ErrTxClosed(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	tx, err := db.Begin(true)
 	if err != nil {
@@ -193,6 +200,7 @@ func TestTx_CreateBucket_ErrTxClosed(t *testing.T) {
 
 // Ensure that a Tx can retrieve a bucket.
 func TestTx_Bucket(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.Update(func(tx *bolt.Tx) error {
 		if _, err := tx.CreateBucket([]byte("widgets")); err != nil {
@@ -209,6 +217,7 @@ func TestTx_Bucket(t *testing.T) {
 
 // Ensure that a Tx retrieving a non-existent key returns nil.
 func TestTx_Get_NotFound(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.Update(func(tx *bolt.Tx) error {
 		b, err := tx.CreateBucket([]byte("widgets"))
@@ -230,6 +239,7 @@ func TestTx_Get_NotFound(t *testing.T) {
 
 // Ensure that a bucket can be created and retrieved.
 func TestTx_CreateBucket(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	// Create a bucket.
@@ -258,6 +268,7 @@ func TestTx_CreateBucket(t *testing.T) {
 
 // Ensure that a bucket can be created if it doesn't already exist.
 func TestTx_CreateBucketIfNotExists(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.Update(func(tx *bolt.Tx) error {
 		// Create bucket.
@@ -292,6 +303,7 @@ func TestTx_CreateBucketIfNotExists(t *testing.T) {
 
 // Ensure transaction returns an error if creating an unnamed bucket.
 func TestTx_CreateBucketIfNotExists_ErrBucketNameRequired(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.Update(func(tx *bolt.Tx) error {
 		if _, err := tx.CreateBucketIfNotExists([]byte{}); err != berrors.ErrBucketNameRequired {
@@ -310,6 +322,7 @@ func TestTx_CreateBucketIfNotExists_ErrBucketNameRequired(t *testing.T) {
 
 // Ensure that a bucket cannot be created twice.
 func TestTx_CreateBucket_ErrBucketExists(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	// Create a bucket.
@@ -335,6 +348,7 @@ func TestTx_CreateBucket_ErrBucketExists(t *testing.T) {
 
 // Ensure that a bucket is created with a non-blank name.
 func TestTx_CreateBucket_ErrBucketNameRequired(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.Update(func(tx *bolt.Tx) error {
 		if _, err := tx.CreateBucket(nil); err != berrors.ErrBucketNameRequired {
@@ -348,6 +362,7 @@ func TestTx_CreateBucket_ErrBucketNameRequired(t *testing.T) {
 
 // Ensure that a bucket can be deleted.
 func TestTx_DeleteBucket(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	// Create a bucket and add a value.
@@ -394,6 +409,7 @@ func TestTx_DeleteBucket(t *testing.T) {
 
 // Ensure that deleting a bucket on a closed transaction returns an error.
 func TestTx_DeleteBucket_ErrTxClosed(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	tx, err := db.Begin(true)
 	if err != nil {
@@ -409,6 +425,7 @@ func TestTx_DeleteBucket_ErrTxClosed(t *testing.T) {
 
 // Ensure that deleting a bucket with a read-only transaction returns an error.
 func TestTx_DeleteBucket_ReadOnly(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.View(func(tx *bolt.Tx) error {
 		if err := tx.DeleteBucket([]byte("foo")); err != berrors.ErrTxNotWritable {
@@ -422,6 +439,7 @@ func TestTx_DeleteBucket_ReadOnly(t *testing.T) {
 
 // Ensure that nothing happens when deleting a bucket that doesn't exist.
 func TestTx_DeleteBucket_NotFound(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.Update(func(tx *bolt.Tx) error {
 		if err := tx.DeleteBucket([]byte("widgets")); err != berrors.ErrBucketNotFound {
@@ -436,6 +454,7 @@ func TestTx_DeleteBucket_NotFound(t *testing.T) {
 // Ensure that no error is returned when a tx.ForEach function does not return
 // an error.
 func TestTx_ForEach_NoError(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.Update(func(tx *bolt.Tx) error {
 		b, err := tx.CreateBucket([]byte("widgets"))
@@ -459,6 +478,7 @@ func TestTx_ForEach_NoError(t *testing.T) {
 
 // Ensure that an error is returned when a tx.ForEach function returns an error.
 func TestTx_ForEach_WithError(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.Update(func(tx *bolt.Tx) error {
 		b, err := tx.CreateBucket([]byte("widgets"))
@@ -483,6 +503,7 @@ func TestTx_ForEach_WithError(t *testing.T) {
 
 // Ensure that Tx commit handlers are called after a transaction successfully commits.
 func TestTx_OnCommit(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	var x int
@@ -502,6 +523,7 @@ func TestTx_OnCommit(t *testing.T) {
 
 // Ensure that Tx commit handlers are NOT called after a transaction rolls back.
 func TestTx_OnCommit_Rollback(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	var x int
@@ -521,6 +543,7 @@ func TestTx_OnCommit_Rollback(t *testing.T) {
 
 // Ensure that the database can be copied to a file path.
 func TestTx_CopyFile(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	path := tempfile()
@@ -591,6 +614,7 @@ func (f *failWriter) Write(p []byte) (n int, err error) {
 
 // Ensure that Copy handles write errors right.
 func TestTx_CopyFile_Error_Meta(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.Update(func(tx *bolt.Tx) error {
 		b, err := tx.CreateBucket([]byte("widgets"))
@@ -617,6 +641,7 @@ func TestTx_CopyFile_Error_Meta(t *testing.T) {
 
 // Ensure that Copy handles write errors right.
 func TestTx_CopyFile_Error_Normal(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.Update(func(tx *bolt.Tx) error {
 		b, err := tx.CreateBucket([]byte("widgets"))
@@ -643,6 +668,7 @@ func TestTx_CopyFile_Error_Normal(t *testing.T) {
 
 // TestTx_Rollback ensures there is no error when tx rollback whether we sync freelist or not.
 func TestTx_Rollback(t *testing.T) {
+	t.Parallel()
 	for _, isSyncFreelist := range []bool{false, true} {
 		// Open the database.
 		db, err := bolt.Open(tempfile(), 0600, nil)
@@ -698,6 +724,7 @@ func TestTx_Rollback(t *testing.T) {
 // transactions, which requires they must be freed by
 // freelist.releaseRange.
 func TestTx_releaseRange(t *testing.T) {
+	t.Parallel()
 	// Set initial mmap size well beyond the limit we will hit in this
 	// test, since we are testing with long running read transactions
 	// and will deadlock if db.grow is triggered.
@@ -910,6 +937,7 @@ func ExampleTx_CopyFile() {
 }
 
 func TestTxStats_GetAndIncAtomically(t *testing.T) {
+	t.Parallel()
 	var stats bolt.TxStats
 
 	stats.IncPageCount(1)
@@ -968,6 +996,7 @@ func TestTxStats_GetAndIncAtomically(t *testing.T) {
 }
 
 func TestTxStats_Sub(t *testing.T) {
+	t.Parallel()
 	statsA := bolt.TxStats{
 		PageCount:     1,
 		PageAlloc:     2,
@@ -1015,11 +1044,13 @@ func TestTxStats_Sub(t *testing.T) {
 
 // TestTx_TruncateBeforeWrite ensures the file is truncated ahead whether we sync freelist or not.
 func TestTx_TruncateBeforeWrite(t *testing.T) {
+	t.Parallel()
 	if runtime.GOOS == "windows" {
 		return
 	}
 	for _, isSyncFreelist := range []bool{false, true} {
 		t.Run(fmt.Sprintf("isSyncFreelist:%v", isSyncFreelist), func(t *testing.T) {
+			t.Parallel()
 			// Open the database.
 			db := btesting.MustCreateDBWithOption(t, &bolt.Options{
 				NoFreelistSync: isSyncFreelist,

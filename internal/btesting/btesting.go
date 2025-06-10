@@ -34,16 +34,19 @@ type DB struct {
 
 // MustCreateDB returns a new, open DB at a temporary location.
 func MustCreateDB(t testing.TB) *DB {
+	t.Helper()
 	return MustCreateDBWithOption(t, nil)
 }
 
 // MustCreateDBWithOption returns a new, open DB at a temporary location with given options.
 func MustCreateDBWithOption(t testing.TB, o *bolt.Options) *DB {
+	t.Helper()
 	f := filepath.Join(t.TempDir(), "db")
 	return MustOpenDBWithOption(t, f, o)
 }
 
 func MustOpenDBWithOption(t testing.TB, f string, o *bolt.Options) *DB {
+	t.Helper()
 	db, err := OpenDBWithOption(t, f, o)
 	require.NoError(t, err)
 	require.NotNil(t, db)
@@ -51,9 +54,11 @@ func MustOpenDBWithOption(t testing.TB, f string, o *bolt.Options) *DB {
 }
 
 func OpenDBWithOption(t testing.TB, f string, o *bolt.Options) (*DB, error) {
+	t.Helper()
 	t.Logf("Opening bbolt DB at: %s", f)
 	if o == nil {
-		o = bolt.DefaultOptions
+		d := *bolt.DefaultOptions
+		o = &d
 	}
 
 	freelistType := bolt.FreelistArrayType
@@ -79,6 +84,7 @@ func OpenDBWithOption(t testing.TB, f string, o *bolt.Options) (*DB, error) {
 }
 
 func (db *DB) PostTestCleanup() {
+	db.t.Helper()
 	// Check database consistency after every test.
 	if db.DB != nil {
 		db.MustCheck()
@@ -88,6 +94,7 @@ func (db *DB) PostTestCleanup() {
 
 // Close closes the database but does NOT delete the underlying file.
 func (db *DB) Close() error {
+	db.t.Helper()
 	if db.DB != nil {
 		// Log statistics.
 		if *statsFlag {
@@ -105,11 +112,13 @@ func (db *DB) Close() error {
 
 // MustClose closes the database but does NOT delete the underlying file.
 func (db *DB) MustClose() {
+	db.t.Helper()
 	err := db.Close()
 	require.NoError(db.t, err)
 }
 
 func (db *DB) MustDeleteFile() {
+	db.t.Helper()
 	err := os.Remove(db.Path())
 	require.NoError(db.t, err)
 }
@@ -120,6 +129,7 @@ func (db *DB) SetOptions(o *bolt.Options) {
 
 // MustReopen reopen the database. Panic on error.
 func (db *DB) MustReopen() {
+	db.t.Helper()
 	if db.DB != nil {
 		panic("Please call Close() before MustReopen()")
 	}

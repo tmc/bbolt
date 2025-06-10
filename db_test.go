@@ -47,6 +47,7 @@ type meta struct {
 
 // Ensure that a database can be opened without error.
 func TestOpen(t *testing.T) {
+	t.Parallel()
 	path := tempfile()
 	defer os.RemoveAll(path)
 
@@ -69,6 +70,7 @@ func TestOpen(t *testing.T) {
 // Regression validation for https://github.com/etcd-io/bbolt/pull/122.
 // Tests multiple goroutines simultaneously opening a database.
 func TestOpen_MultipleGoroutines(t *testing.T) {
+	t.Parallel()
 	if testing.Short() {
 		t.Skip("skipping test in short mode")
 	}
@@ -109,6 +111,7 @@ func TestOpen_MultipleGoroutines(t *testing.T) {
 
 // Ensure that opening a database with a blank path returns an error.
 func TestOpen_ErrPathRequired(t *testing.T) {
+	t.Parallel()
 	_, err := bolt.Open("", 0600, nil)
 	if err == nil {
 		t.Fatalf("expected error")
@@ -117,6 +120,7 @@ func TestOpen_ErrPathRequired(t *testing.T) {
 
 // Ensure that opening a database with a bad path returns an error.
 func TestOpen_ErrNotExists(t *testing.T) {
+	t.Parallel()
 	_, err := bolt.Open(filepath.Join(tempfile(), "bad-path"), 0600, nil)
 	if err == nil {
 		t.Fatal("expected error")
@@ -125,6 +129,7 @@ func TestOpen_ErrNotExists(t *testing.T) {
 
 // Ensure that opening a file that is not a Bolt database returns ErrInvalid.
 func TestOpen_ErrInvalid(t *testing.T) {
+	t.Parallel()
 	path := tempfile()
 	defer os.RemoveAll(path)
 
@@ -146,6 +151,7 @@ func TestOpen_ErrInvalid(t *testing.T) {
 
 // Ensure that opening a file with two invalid versions returns ErrVersionMismatch.
 func TestOpen_ErrVersionMismatch(t *testing.T) {
+	t.Parallel()
 	if pageSize != os.Getpagesize() {
 		t.Skip("page size mismatch")
 	}
@@ -182,6 +188,7 @@ func TestOpen_ErrVersionMismatch(t *testing.T) {
 
 // Ensure that opening a file with two invalid checksums returns ErrChecksum.
 func TestOpen_ErrChecksum(t *testing.T) {
+	t.Parallel()
 	if pageSize != os.Getpagesize() {
 		t.Skip("page size mismatch")
 	}
@@ -219,6 +226,7 @@ func TestOpen_ErrChecksum(t *testing.T) {
 // Ensure that it can read the page size from the second meta page if the first one is invalid.
 // The page size is expected to be the OS's page size in this case.
 func TestOpen_ReadPageSize_FromMeta1_OS(t *testing.T) {
+	t.Parallel()
 	// Create empty database.
 	db := btesting.MustCreateDB(t)
 	path := db.Path()
@@ -279,6 +287,7 @@ func TestOpen_ReadPageSize_FromMeta1_Given(t *testing.T) {
 // Ensure that opening a database does not increase its size.
 // https://github.com/boltdb/bolt/issues/291
 func TestOpen_Size(t *testing.T) {
+	t.Parallel()
 	// Open a data file.
 	db := btesting.MustCreateDB(t)
 
@@ -328,6 +337,7 @@ func TestOpen_Size(t *testing.T) {
 // Ensure that opening a database beyond the max step size does not increase its size.
 // https://github.com/boltdb/bolt/issues/303
 func TestOpen_Size_Large(t *testing.T) {
+	t.Parallel()
 	if testing.Short() {
 		t.Skip("short mode")
 	}
@@ -394,6 +404,7 @@ func TestOpen_Size_Large(t *testing.T) {
 
 // Ensure that a re-opened database is consistent.
 func TestOpen_Check(t *testing.T) {
+	t.Parallel()
 	path := tempfile()
 	defer os.RemoveAll(path)
 
@@ -422,11 +433,13 @@ func TestOpen_Check(t *testing.T) {
 
 // Ensure that write errors to the meta file handler during initialization are returned.
 func TestOpen_MetaInitWriteError(t *testing.T) {
+	t.Parallel()
 	t.Skip("pending")
 }
 
 // Ensure that a database that is too small returns an error.
 func TestOpen_FileTooSmall(t *testing.T) {
+	t.Parallel()
 	path := tempfile()
 	defer os.RemoveAll(path)
 
@@ -513,6 +526,7 @@ func TestDB_Open_InitialMmapSize(t *testing.T) {
 
 // TestDB_Open_ReadOnly checks a database in read only mode can read but not write.
 func TestDB_Open_ReadOnly(t *testing.T) {
+	t.Parallel()
 	// Create a writable db, write k-v and close it.
 	db := btesting.MustCreateDB(t)
 
@@ -565,6 +579,7 @@ func TestDB_Open_ReadOnly(t *testing.T) {
 }
 
 func TestDB_Open_ReadOnly_NoCreate(t *testing.T) {
+	t.Parallel()
 	f := filepath.Join(t.TempDir(), "db")
 	_, err := bolt.Open(f, 0600, &bolt.Options{ReadOnly: true})
 	require.ErrorIs(t, err, os.ErrNotExist)
@@ -573,6 +588,7 @@ func TestDB_Open_ReadOnly_NoCreate(t *testing.T) {
 // TestOpen_BigPage checks the database uses bigger pages when
 // changing PageSize.
 func TestOpen_BigPage(t *testing.T) {
+	t.Parallel()
 	pageSize := os.Getpagesize()
 
 	db1 := btesting.MustCreateDBWithOption(t, &bolt.Options{PageSize: pageSize * 2})
@@ -588,6 +604,7 @@ func TestOpen_BigPage(t *testing.T) {
 // write-out after no free list sync will recover the free list
 // and write it out.
 func TestOpen_RecoverFreeList(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDBWithOption(t, &bolt.Options{NoFreelistSync: true})
 
 	// Write some pages.
@@ -649,6 +666,7 @@ func TestOpen_RecoverFreeList(t *testing.T) {
 
 // Ensure that a database cannot open a transaction when it's not open.
 func TestDB_Begin_ErrDatabaseNotOpen(t *testing.T) {
+	t.Parallel()
 	var db bolt.DB
 	if _, err := db.Begin(false); err != berrors.ErrDatabaseNotOpen {
 		t.Fatalf("unexpected error: %s", err)
@@ -657,6 +675,7 @@ func TestDB_Begin_ErrDatabaseNotOpen(t *testing.T) {
 
 // Ensure that a read-write transaction can be retrieved.
 func TestDB_BeginRW(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	tx, err := db.Begin(true)
@@ -673,6 +692,7 @@ func TestDB_BeginRW(t *testing.T) {
 // readonly transactions, which are created based on the same data view, should
 // always read the same data.
 func TestDB_Concurrent_WriteTo_and_ConsistentRead(t *testing.T) {
+	t.Parallel()
 	o := &bolt.Options{
 		NoFreelistSync: false,
 		PageSize:       4096,
@@ -762,6 +782,7 @@ func TestDB_Concurrent_WriteTo_and_ConsistentRead(t *testing.T) {
 
 // Ensure that opening a transaction while the DB is closed returns an error.
 func TestDB_BeginRW_Closed(t *testing.T) {
+	t.Parallel()
 	var db bolt.DB
 	if _, err := db.Begin(true); err != berrors.ErrDatabaseNotOpen {
 		t.Fatalf("unexpected error: %s", err)
@@ -773,6 +794,7 @@ func TestDB_Close_PendingTx_RO(t *testing.T) { testDB_Close_PendingTx(t, false) 
 
 // Ensure that a database cannot close while transactions are open.
 func testDB_Close_PendingTx(t *testing.T, writable bool) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	// Start transaction.
@@ -826,6 +848,7 @@ func testDB_Close_PendingTx(t *testing.T, writable bool) {
 
 // Ensure a database can provide a transactional block.
 func TestDB_Update(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.Update(func(tx *bolt.Tx) error {
 		b, err := tx.CreateBucket([]byte("widgets"))
@@ -861,6 +884,7 @@ func TestDB_Update(t *testing.T) {
 
 // Ensure a closed database returns an error while running a transaction block
 func TestDB_Update_Closed(t *testing.T) {
+	t.Parallel()
 	var db bolt.DB
 	if err := db.Update(func(tx *bolt.Tx) error {
 		if _, err := tx.CreateBucket([]byte("widgets")); err != nil {
@@ -874,6 +898,7 @@ func TestDB_Update_Closed(t *testing.T) {
 
 // Ensure a panic occurs while trying to commit a managed transaction.
 func TestDB_Update_ManualCommit(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	var panicked bool
@@ -899,6 +924,7 @@ func TestDB_Update_ManualCommit(t *testing.T) {
 
 // Ensure a panic occurs while trying to rollback a managed transaction.
 func TestDB_Update_ManualRollback(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	var panicked bool
@@ -924,6 +950,7 @@ func TestDB_Update_ManualRollback(t *testing.T) {
 
 // Ensure a panic occurs while trying to commit a managed transaction.
 func TestDB_View_ManualCommit(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	var panicked bool
@@ -949,6 +976,7 @@ func TestDB_View_ManualCommit(t *testing.T) {
 
 // Ensure a panic occurs while trying to rollback a managed transaction.
 func TestDB_View_ManualRollback(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	var panicked bool
@@ -974,6 +1002,7 @@ func TestDB_View_ManualRollback(t *testing.T) {
 
 // Ensure a write transaction that panics does not hold open locks.
 func TestDB_Update_Panic(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	// Panic during update but recover.
@@ -1017,6 +1046,7 @@ func TestDB_Update_Panic(t *testing.T) {
 
 // Ensure a database can return an error through a read-only transactional block.
 func TestDB_View_Error(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	if err := db.View(func(tx *bolt.Tx) error {
@@ -1028,6 +1058,7 @@ func TestDB_View_Error(t *testing.T) {
 
 // Ensure a read transaction that panics does not hold open locks.
 func TestDB_View_Panic(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	if err := db.Update(func(tx *bolt.Tx) error {
@@ -1070,6 +1101,7 @@ func TestDB_View_Panic(t *testing.T) {
 
 // Ensure that DB stats can be returned.
 func TestDB_Stats(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucket([]byte("widgets"))
@@ -1090,6 +1122,7 @@ func TestDB_Stats(t *testing.T) {
 
 // Ensure that database pages are in expected order and type.
 func TestDB_Consistency(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucket([]byte("widgets"))
@@ -1157,6 +1190,7 @@ func TestDB_Consistency(t *testing.T) {
 
 // Ensure that DB stats can be subtracted from one another.
 func TestDBStats_Sub(t *testing.T) {
+	t.Parallel()
 	var a, b bolt.Stats
 	a.TxStats.PageCount = 3
 	a.FreePageN = 4
@@ -1175,6 +1209,7 @@ func TestDBStats_Sub(t *testing.T) {
 
 // Ensure two functions can perform updates in a single batch.
 func TestDB_Batch(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	if err := db.Update(func(tx *bolt.Tx) error {
@@ -1219,6 +1254,7 @@ func TestDB_Batch(t *testing.T) {
 }
 
 func TestDB_Batch_Panic(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	var sentinel int
@@ -1249,6 +1285,7 @@ func TestDB_Batch_Panic(t *testing.T) {
 }
 
 func TestDB_BatchFull(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucket([]byte("widgets"))
@@ -1307,6 +1344,7 @@ func TestDB_BatchFull(t *testing.T) {
 }
 
 func TestDB_BatchTime(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 	if err := db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucket([]byte("widgets"))
@@ -1355,6 +1393,7 @@ func TestDB_BatchTime(t *testing.T) {
 // TestDBUnmap verifes that `dataref`, `data` and `datasz` must be reset
 // to zero values respectively after unmapping the db.
 func TestDBUnmap(t *testing.T) {
+	t.Parallel()
 	db := btesting.MustCreateDB(t)
 
 	require.NoError(t, db.DB.Close())
@@ -1402,6 +1441,7 @@ func createFilledDB(t testing.TB, o *bolt.Options, allocSize int, numKeys int) *
 // Ensure that a database cannot exceed its maximum size
 // https://github.com/etcd-io/bbolt/issues/928
 func TestDB_MaxSizeNotExceeded(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		name    string
 		options bolt.Options
@@ -1425,6 +1465,7 @@ func TestDB_MaxSizeNotExceeded(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
 			db := createFilledDB(t,
 				&testCase.options,
 				4*1024*1024, // adjust allocation jumps to 4 MiB
@@ -1453,6 +1494,7 @@ func TestDB_MaxSizeNotExceeded(t *testing.T) {
 // The maximum size should only apply to growing the data file
 // https://github.com/etcd-io/bbolt/issues/928
 func TestDB_MaxSizeExceededCanOpen(t *testing.T) {
+	t.Parallel()
 	// Open a data file.
 	db := createFilledDB(t, nil, 4*1024*1024, 2000) // adjust allocation jumps to 4 MiB, fill with 2000, 1KB keys
 	path := db.Path()
@@ -1485,6 +1527,7 @@ func TestDB_MaxSizeExceededCanOpen(t *testing.T) {
 // This test exists for platforms where Truncate should not be called during mmap
 // https://github.com/etcd-io/bbolt/issues/928
 func TestDB_MaxSizeExceededCanOpenWithHighMmap(t *testing.T) {
+	t.Parallel()
 	if runtime.GOOS == "windows" {
 		// In Windows, the file must be expanded to the mmap initial size,
 		// so this test doesn't run in Windows.
@@ -1520,6 +1563,7 @@ func TestDB_MaxSizeExceededCanOpenWithHighMmap(t *testing.T) {
 // In Windows, the file must be expanded to the mmap initial size.
 // https://github.com/etcd-io/bbolt/issues/928
 func TestDB_MaxSizeExceededDoesNotGrow(t *testing.T) {
+	t.Parallel()
 	if runtime.GOOS != "windows" {
 		// This test is only relevant on Windows
 		t.SkipNow()

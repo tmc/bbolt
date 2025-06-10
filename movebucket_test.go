@@ -15,6 +15,7 @@ import (
 )
 
 func TestTx_MoveBucket(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		name                    string
 		srcBucketPath           []string
@@ -142,7 +143,8 @@ func TestTx_MoveBucket(t *testing.T) {
 
 	for _, tc := range testCases {
 
-		t.Run(tc.name, func(*testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			db := btesting.MustCreateDBWithOption(t, &bbolt.Options{PageSize: 4096})
 
 			dumpBucketBeforeMoving := filepath.Join(t.TempDir(), "dbBeforeMove")
@@ -217,6 +219,7 @@ func TestTx_MoveBucket(t *testing.T) {
 }
 
 func TestBucket_MoveBucket_DiffDB(t *testing.T) {
+	t.Parallel()
 	srcBucketPath := []string{"sb1", "sb2"}
 	dstBucketPath := []string{"db1", "db2"}
 	bucketToMove := "bucketToMove"
@@ -265,6 +268,7 @@ func TestBucket_MoveBucket_DiffDB(t *testing.T) {
 }
 
 func TestBucket_MoveBucket_DiffTx(t *testing.T) {
+	t.Parallel()
 	testCases := []struct {
 		name            string
 		srcBucketPath   []string
@@ -296,6 +300,7 @@ func TestBucket_MoveBucket_DiffTx(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			var srcBucket *bbolt.Bucket
 			var dstBucket *bbolt.Bucket
 
